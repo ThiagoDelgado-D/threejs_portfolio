@@ -1,27 +1,34 @@
-import { useGLTF } from '@react-three/drei';
 import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
+import { useFrame } from '@react-three/fiber';
 
-const Target = (props) => {
-  const targetRef = useRef();
-  const { scene } = useGLTF(
-    'https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/target-stand/model.gltf',
-  );
+const Target = ({ position }) => {
+  const meshRef = useRef();
 
-  useGSAP(() => {
-    gsap.to(targetRef.current.position, {
-      y: targetRef.current.position.y + 0.5,
-      duration: 1.5,
-      repeat: -1,
-      yoyo: true,
-    });
+  useFrame(({ clock }) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y = clock.getElapsedTime() * 0.5;
+    }
   });
 
   return (
-    <mesh {...props} ref={targetRef} rotation={[0, Math.PI / 5, 0]} scale={1.5}>
-      <primitive object={scene} />
-    </mesh>
+    <group position={position} ref={meshRef}>
+      <mesh position={[0, -1, 0]}>
+        <cylinderGeometry args={[0.05, 0.05, 2, 16]} />
+        <meshStandardMaterial color="gray" />
+      </mesh>
+      <mesh position={[0, 0.2, 0]}>
+        <torusGeometry args={[0.6, 0.08, 16, 100]} />
+        <meshStandardMaterial color="red" />
+      </mesh>
+      <mesh position={[0, 0.2, 0]}>
+        <torusGeometry args={[0.4, 0.08, 16, 100]} />
+        <meshStandardMaterial color="white" />
+      </mesh>
+      <mesh position={[0, 0.2, 0]}>
+        <torusGeometry args={[0.2, 0.08, 16, 100]} />
+        <meshStandardMaterial color="red" />
+      </mesh>
+    </group>
   );
 };
 
